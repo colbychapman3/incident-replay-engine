@@ -1,0 +1,118 @@
+{
+  "swarmId": "ire-swarm-v1",
+  "topology": "hierarchical",
+  "maxAgents": 8,
+  "strategy": "specialized",
+  "agents": [
+    {
+      "type": "coordinator",
+      "name": "ire-coordinator",
+      "capabilities": [
+        "phase-management",
+        "decision-tracking",
+        "conflict-resolution"
+      ],
+      "autoSpawn": true,
+      "phases": [1, 2, 3, 4, 5, 6, 7]
+    },
+    {
+      "type": "architect",
+      "name": "ire-architect",
+      "capabilities": [
+        "database-schema",
+        "type-system",
+        "konva-layers",
+        "component-structure"
+      ],
+      "autoSpawn": false,
+      "phases": [1, 3, 4]
+    },
+    {
+      "type": "coder",
+      "name": "ire-canvas-coder",
+      "capabilities": [
+        "react-components",
+        "canvas-rendering",
+        "coordinate-conversion",
+        "state-management"
+      ],
+      "autoSpawn": false,
+      "phases": [1, 2, 4, 5]
+    },
+    {
+      "type": "specialist",
+      "name": "ire-geometry-expert",
+      "capabilities": [
+        "ray-casting",
+        "polygon-math",
+        "envelope-rendering",
+        "collision-detection"
+      ],
+      "autoSpawn": false,
+      "phases": [2, 3]
+    },
+    {
+      "type": "tester",
+      "name": "ire-tester",
+      "capabilities": [
+        "tdd",
+        "unit-tests",
+        "integration-tests",
+        "coverage-90"
+      ],
+      "autoSpawn": true,
+      "phases": [1, 2, 3, 4, 5, 6, 7]
+    },
+    {
+      "type": "specialist",
+      "name": "ire-timeline-specialist",
+      "capabilities": [
+        "keyframe-interpolation",
+        "playback-control",
+        "state-snapshot"
+      ],
+      "autoSpawn": false,
+      "phases": [4]
+    },
+    {
+      "type": "specialist",
+      "name": "ire-export-engineer",
+      "capabilities": [
+        "ffmpeg",
+        "pdf-generation",
+        "server-rendering",
+        "job-queue"
+      ],
+      "autoSpawn": false,
+      "phases": [6]
+    },
+    {
+      "type": "reviewer",
+      "name": "ire-security-reviewer",
+      "capabilities": [
+        "owasp",
+        "input-validation",
+        "audit-trail",
+        "csp-headers"
+      ],
+      "autoSpawn": false,
+      "phases": [7]
+    }
+  ],
+  "memoryNamespaces": [
+    "ire-architecture",
+    "ire-domain",
+    "ire-patterns",
+    "ire-testing",
+    "ire-performance",
+    "ire-phase-1",
+    "ire-phase-2",
+    "ire-phase-3",
+    "ire-phase-4",
+    "ire-phase-5",
+    "ire-phase-6",
+    "ire-phase-7"
+  ],
+  "createdAt": "2025-12-25T16:34:00Z",
+  "version": "1.0.0"
+}

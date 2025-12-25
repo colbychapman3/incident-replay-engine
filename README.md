@@ -1,36 +1,130 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Incident Replay Engine (IRE)
 
-## Getting Started
+A deterministic, court-safe incident reconstruction tool for maritime and port operations.
 
-First, run the development server:
+## Overview
+
+The IRE enables supervisors and safety personnel to accurately recreate vehicle and personnel incidents for:
+- Training and safety reviews
+- SOP enforcement
+- Legal and insurance documentation
+
+**Core Principle**: Zero assumptions. Truth-preserving reconstruction. No guessing, no inference.
+
+## Features (MVP)
+
+- ✅ 2D top-down scene editor (vessel decks + port roads)
+- ✅ Asset library: 6 vehicles, 9 actor roles, 5 safety objects
+- ✅ 4 operational envelope overlays:
+  - Forklift visibility cone & blind spot overlay
+  - MAFI trailer swing envelope during turns
+  - Spotter line-of-sight indicators with obstruction detection
+  - Ramp clearance height zones with violation alerts
+- ✅ Timeline system with keyframes and interpolation
+- ✅ Guided wizard (8-step project creation)
+- ✅ Deterministic command chatbot (3 modes: Command, Coach, Report)
+- ✅ Multi-format export: PNG, GIF, MP4, PDF packet
+
+## Quick Start
+
+### Prerequisites
+- Node.js 22.17.1+
+- PostgreSQL 15
+- Redis 7
+- ffmpeg (for video export)
+
+### Installation
 
 ```bash
+# Install dependencies
+npm install
+
+# Setup environment
+cp .env.example .env
+# Edit .env with your database credentials
+
+# Start PostgreSQL + Redis (Docker)
+docker-compose up -d
+
+# Initialize database
+npx prisma migrate dev
+npx prisma db seed
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Development
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+See [CLAUDE.md](./CLAUDE.md) for detailed architecture, commands, and development guidelines.
 
-## Learn More
+### Key Commands
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run dev              # Start dev server
+npm run build            # Production build
+npm test                 # Run tests
+npx prisma studio        # Visual database browser
+docker-compose up -d     # Start local PostgreSQL + Redis
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+/app                    # Next.js 14 App Router
+  /api                  # API routes (export, projects)
+  /projects/[id]        # Main editor view
+  /dashboard            # Project list
+/components
+  /canvas               # Konva.js scene editor
+  /timeline             # Keyframe timeline UI
+  /wizard               # 8-step project wizard
+  /chatbot              # 3-mode command chatbot
+/context                # React Context (scene state)
+/lib
+  /envelopes            # 4 operational envelope calculators
+  /timeline             # Interpolation algorithms
+  /commands             # Deterministic command parser
+  /export               # PNG/GIF/MP4/PDF generation
+/prisma                 # Database schema
+/public/assets          # Vehicle/actor/safety object sprites + metadata
+```
 
-## Deploy on Vercel
+## Tech Stack
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Frontend**: Next.js 14, TypeScript, React, Konva.js, Tailwind CSS
+- **Backend**: Node.js, PostgreSQL, Redis, Prisma ORM
+- **Export**: ffmpeg (MP4/GIF), jsPDF (PDF)
+- **Deployment**: Render.com (Docker)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Implementation Timeline
+
+- **Week 1**: Foundation (Next.js + Konva + PostgreSQL)
+- **Week 2-3**: Assets + Core Canvas Engine
+- **Week 3-4**: Operational Envelopes
+- **Week 4-5**: Timeline & Animation
+- **Week 5-6**: Wizard & Command System
+- **Week 6-7**: Export Pipeline
+- **Week 7-8**: Polish & Production
+
+## Testing
+
+```bash
+npm test                 # Unit tests (Jest)
+npm run test:coverage    # Coverage report (target: 90%+)
+npm run test:e2e         # E2E tests (Playwright)
+```
+
+## License
+
+[Add license here]
+
+## Contributing
+
+See [CLAUDE.md](./CLAUDE.md) for SPARC methodology and development workflow.
+
+---
+
+**Rule**: Build for accuracy first, performance second. Court-safe documentation is non-negotiable.
