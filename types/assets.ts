@@ -3,42 +3,40 @@ import { Point } from './scene';
 export interface VehicleAsset {
   id: string;
   type: 'vehicle';
-  subtype: 'mafi-truck' | 'mafi-trailer' | 'forklift' | 'pov' | 'gear-wagon' | 'water-van';
-  displayName: string;
-  dimensions: { width: number; height: number };
-  pivotPoint: Point;
-  constraints: {
-    turningRadius?: number;
-    maxSpeed?: number;
-    rearWheelSteering?: boolean;
+  name: string;
+  category: 'vehicle';
+  dimensions: {
+    length: number;
+    width: number;
+    height: number;
   };
-  imagePath: string;
-  boundingBox: Point[];
+  pivotPoint: Point;
+  turningRadius: number;
+  metadata?: Record<string, any>;
 }
 
 export interface ActorAsset {
   id: string;
   type: 'actor';
+  name: string;
+  category: 'actor';
   role: 'driver' | 'spotter' | 'flagger' | 'header' | 'stevedore' | 'gear-person' | 'water-person' | 'chief-officer' | 'shipmate';
-  displayName: string;
-  dimensions: { width: number; height: number };
-  ppeConfig: {
-    hardHat: boolean;
-    vest: boolean;
-    gloves: boolean;
-    steelToes: boolean;
-  };
+  ppeColor: string;
   visionRange: number;
-  imagePath: string;
+  metadata?: Record<string, any>;
 }
 
 export interface SafetyObjectAsset {
   id: string;
   type: 'safety-object';
-  subtype: 'cone' | 'tape' | 'sign' | 'arrow' | 'marker';
-  displayName: string;
-  dimensions: { width: number; height: number };
-  imagePath: string;
+  name: string;
+  category: 'safety-object';
+  purpose: 'traffic-control' | 'area-restriction' | 'guidance';
+  dimensions: {
+    width: number;
+    height: number;
+  };
+  metadata?: Record<string, any>;
 }
 
-export type Asset = VehicleAsset | ActorAsset | SafetyObjectAsset;
+export type AssetDefinition = VehicleAsset | ActorAsset | SafetyObjectAsset;
