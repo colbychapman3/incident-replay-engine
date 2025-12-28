@@ -1,9 +1,9 @@
-# Current Phase: Phase 3 - Operational Envelopes
+# Current Phase: Phase 4 - Timeline & Animation
 
 **Status**: Ready to Begin
-**Previous Phase**: Phase 2 - Assets & Canvas (✅ COMPLETE)
+**Previous Phase**: Phase 3 - Operational Envelopes (✅ COMPLETE)
 
-## Phase 1 & 2 Completion Summary
+## Phase 1, 2, & 3 Completion Summary
 
 ### Phase 1: Foundation ✅
 - Database setup (PostgreSQL + Redis via Docker)
@@ -24,90 +24,105 @@
 - Asset spawning from palette
 - Production build passing
 
-## Next: Phase 3 - Operational Envelopes
+### Phase 3: Operational Envelopes ✅
+- Forklift Vision Cone & Blind Spots (120° arc, 15m range, 3 blind spot types)
+- MAFI Trailer Swing Envelope (articulation-based inner/outer sweep)
+- Spotter Line-of-Sight (ray-casting with obstruction detection)
+- Ramp Clearance Height Zones (automatic violation detection)
+- EnvelopeToggles UI component with per-type controls
+- Complete EnvelopeLayer rewrite with all 4 renderers
+- Type-safe discriminated union envelope system
+- TDD coverage: 20 tests, 100% passing
+- Performance optimization: useMemo caching, listening: false
+- SPARC documentation complete
 
-**Core Business Value**: These 4 envelope types are the primary value proposition of the Incident Replay Engine.
+## Next: Phase 4 - Timeline & Animation
+
+**Core Business Value**: Enable incident playback with keyframe-based animation system for court-safe temporal visualization.
 
 ### Required Implementations
 
-1. **Forklift Visibility Cone & Blind Spot Overlay**
-   - Vision cone: 120° arc, 15m range
-   - Blind spots: Rear, forks, load-obstructed areas
-   - Rendering: Green cone, red cross-hatched blind spots
-   - Dynamic: Updates based on fork height and rotation
-   - File: `lib/envelopes/forklift-vision.ts`
+1. **Keyframe Model**
+   - Discrete timesteps (T0, T1, T2, ...)
+   - Keyframe labels ("T0: Truck arrives", "T1: Spotter signals")
+   - Object state snapshots per keyframe
+   - Database schema: keyframes + object_states tables
+   - File: `types/timeline.ts`, Prisma schema updates
 
-2. **MAFI Trailer Swing Envelope During Turns**
-   - Input: Articulation angle (steering wheel control)
-   - Calculation: Inner/outer sweep path
-   - Pivot point: Rear axle visualization
-   - Rendering: Yellow/orange warning zone
-   - File: `lib/envelopes/mafi-swing.ts`
+2. **Linear Interpolation System**
+   - Position interpolation (lerpPoint)
+   - Rotation interpolation with angle wrapping (lerpAngle)
+   - Property interpolation (lerpProperties)
+   - Frame calculation: 30fps between keyframes
+   - File: `lib/timeline/interpolation.ts`
 
-3. **Spotter Line-of-Sight Indicators**
-   - Ray-casting: From spotter to target
-   - Obstruction detection: Vehicles, ramps, stanchions
-   - Rendering: Green line (clear) or red dashed (obstructed)
-   - Alert: "OBSTRUCTED" label when blocked
-   - File: `lib/envelopes/spotter-los.ts`
+3. **Timeline UI Component**
+   - Keyframe markers on timeline scrubber
+   - Current time indicator
+   - Playback controls (play, pause, step, speed)
+   - Keyframe labels and editing
+   - File: `components/timeline/Timeline.tsx`
 
-4. **Ramp Clearance Height Zones**
-   - Metadata: Each ramp has clearance height
-   - Detection: Automatic violation when vehicle height > clearance
-   - Rendering: Purple dashed boundary, red markers
-   - Alert: "⚠ +0.7m" (amount exceeding limit)
-   - File: `lib/envelopes/ramp-clearance.ts`
+4. **Playback System**
+   - 30fps rendering loop
+   - Variable playback speed (0.5x, 1x, 2x)
+   - Time-aware envelope rendering
+   - Frame-accurate positioning
+   - File: `hooks/useTimelinePlayback.ts`
 
 ### Implementation Strategy
 
 **SPARC Workflow**:
-1. Specification: Document each envelope type's requirements
-2. Pseudocode: Algorithm design for calculations
-3. Architecture: Integration with EnvelopeLayer
-4. Refinement: TDD implementation (Red-Green-Refactor)
-5. Completion: Integration tests, visual verification
+1. Specification: Keyframe model, interpolation algorithms, UI requirements
+2. Pseudocode: Interpolation math, playback loop, state updates
+3. Architecture: Timeline state management, integration with SceneContext
+4. Refinement: TDD for interpolation (angle wrapping edge cases)
+5. Completion: E2E playback testing, performance validation
 
 **Swarm Coordination**:
-- Geometry Expert: Ray-casting, polygon math, arc calculations
-- Canvas Coder: EnvelopeLayer rendering, performance optimization
-- Tester: Unit tests for each envelope calculation
-- Coordinator: Integration and validation
+- Math Expert: Linear interpolation algorithms, angle normalization
+- React Coder: Timeline UI, playback controls, scrubber
+- Database Expert: Keyframe/object_states schema, Prisma integration
+- Tester: Interpolation edge cases, playback accuracy
 
 ### Acceptance Criteria
 
-- [ ] All 4 envelope types implemented
-- [ ] Envelope calculations use world coordinates (meters)
-- [ ] Envelopes update dynamically on object movement
-- [ ] Toggle controls for each envelope type
-- [ ] Performance optimization (memoization, selective rendering)
-- [ ] Unit tests for each envelope (90%+ coverage)
-- [ ] Visual accuracy verified against maritime standards
-- [ ] Integration with existing EnvelopeLayer component
+- [ ] Keyframe model implemented with Prisma schema
+- [ ] Linear interpolation for position, rotation, properties
+- [ ] Timeline UI with scrubber and keyframe markers
+- [ ] Playback system (30fps, variable speed)
+- [ ] Time-aware envelope rendering during playback
+- [ ] Angle wrapping handled correctly (lerpAngle)
+- [ ] Unit tests for interpolation (90%+ coverage)
+- [ ] E2E test for complete playback cycle
+- [ ] Frame-accurate court-safe documentation
 
 ### Timeline
 
-**Estimated**: Week 3-4 (7-10 days)
+**Estimated**: Week 4-5 (7-10 days)
 **Fast-Track (YOLO Mode)**: 2-3 days
 
 ### Files to Create/Modify
 
 **New Files**:
-- `lib/envelopes/forklift-vision.ts`
-- `lib/envelopes/mafi-swing.ts`
-- `lib/envelopes/spotter-los.ts`
-- `lib/envelopes/ramp-clearance.ts`
-- `__tests__/lib/envelopes/*.test.ts`
-- `docs/sparc/phases/phase-3-envelopes.md`
+- `types/timeline.ts` - Timeline, Keyframe, ObjectState types
+- `lib/timeline/interpolation.ts` - lerpPoint, lerpAngle, lerpProperties
+- `components/timeline/Timeline.tsx` - Timeline UI
+- `components/timeline/TimelineControls.tsx` - Play/pause controls
+- `hooks/useTimelinePlayback.ts` - Playback logic hook
+- `__tests__/lib/timeline/interpolation.test.ts` - Interpolation tests
+- `docs/sparc/phases/phase-4-timeline.md` - SPARC documentation
 
 **Modify**:
-- `components/canvas/layers/EnvelopeLayer.tsx` (integrate 4 envelope renderers)
-- `types/envelopes.ts` (envelope type definitions)
-- `lib/geometry.ts` (add any missing utilities)
+- `prisma/schema.prisma` - Add keyframes, object_states tables
+- `context/SceneContext.tsx` - Timeline state integration
+- `components/canvas/layers/EnvelopeLayer.tsx` - Time-aware rendering
+- `app/editor/page.tsx` - Timeline component integration
 
 ---
 
 **Ready to Begin**: Yes ✅
-**Dependencies Met**: Phase 1 & 2 complete
+**Dependencies Met**: Phase 1, 2, 3 complete
 **Database Running**: `docker-compose up -d`
 **Build Status**: Passing
-**Test Status**: 50/53 passing (acceptable)
+**Test Status**: 70/73 passing (acceptable)
