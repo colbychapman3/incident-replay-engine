@@ -5,8 +5,9 @@ import { SceneProvider, useSceneContext } from '@/context/SceneContext';
 import { SceneEditor } from '@/components/canvas/SceneEditor';
 import { AssetPalette } from '@/components/ui/AssetPalette';
 import { PropertyPanel } from '@/components/ui/PropertyPanel';
+import { EnvelopeToggles } from '@/components/ui/EnvelopeToggles';
 import { AssetDefinition } from '@/types/assets';
-import { SceneObject } from '@/types/scene';
+import { SceneObject, EnvelopeType } from '@/types/scene';
 
 function EditorContent() {
   const { state, dispatch } = useSceneContext();
@@ -105,6 +106,11 @@ function EditorContent() {
     state.selectedIds.includes(obj.id)
   );
 
+  // Handle envelope toggle
+  const handleEnvelopeToggle = (type: EnvelopeType) => {
+    dispatch({ type: 'TOGGLE_ENVELOPE', payload: type });
+  };
+
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-gray-900">
       {/* Left Sidebar: Asset Palette */}
@@ -143,6 +149,12 @@ function EditorContent() {
             </button>
           </div>
         </div>
+
+        {/* Envelope Toggles */}
+        <EnvelopeToggles
+          visibility={state.envelopeVisibility}
+          onToggle={handleEnvelopeToggle}
+        />
 
         {/* Canvas */}
         <div className="flex-1 overflow-auto">

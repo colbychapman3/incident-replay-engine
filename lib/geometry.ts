@@ -1,5 +1,5 @@
 import { Point } from '@/types/scene';
-import { Polygon } from '@/types/envelopes';
+import { Polygon } from '@/types/geometry';
 
 /**
  * Calculate Euclidean distance between two points
