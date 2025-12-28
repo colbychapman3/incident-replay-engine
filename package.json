@@ -13,13 +13,13 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
-    "@prisma/client": "^7.2.0",
+    "@prisma/client": "6.19.1",
     "jspdf": "^3.0.4",
     "jspdf-autotable": "^5.0.2",
     "konva": "^10.0.12",
     "lucide-react": "^0.562.0",
     "next": "16.1.1",
-    "prisma": "^7.2.0",
+    "prisma": "6.19.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-konva": "^19.2.1",

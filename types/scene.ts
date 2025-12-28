@@ -34,6 +34,9 @@ export type SceneAction =
   | { type: 'MOVE_OBJECT'; payload: { id: string; position: Point } }
   | { type: 'ROTATE_OBJECT'; payload: { id: string; rotation: number } }
   | { type: 'DELETE_OBJECT'; payload: { id: string } }
+  | { type: 'SELECT_OBJECT'; payload: { id: string } }
+  | { type: 'DESELECT_OBJECT'; payload: { id: string } }
+  | { type: 'CLEAR_SELECTION' }
   | { type: 'SET_KEYFRAME'; payload: number }
   | { type: 'TOGGLE_ENVELOPE'; payload: EnvelopeType }
   | { type: 'UNDO' }

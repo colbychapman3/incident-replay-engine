@@ -169,6 +169,30 @@ export function sceneReducer(state: SceneState, action: SceneAction): SceneState
         redoStack: []
       };
 
+    case 'SELECT_OBJECT':
+      return {
+        ...state,
+        selectedIds: [...state.selectedIds, action.payload.id],
+        undoStack: [...state.undoStack, snapshot],
+        redoStack: []
+      };
+
+    case 'DESELECT_OBJECT':
+      return {
+        ...state,
+        selectedIds: state.selectedIds.filter(id => id !== action.payload.id),
+        undoStack: [...state.undoStack, snapshot],
+        redoStack: []
+      };
+
+    case 'CLEAR_SELECTION':
+      return {
+        ...state,
+        selectedIds: [],
+        undoStack: [...state.undoStack, snapshot],
+        redoStack: []
+      };
+
     default:
       return state;
   }
