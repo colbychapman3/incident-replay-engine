@@ -193,6 +193,96 @@ export function sceneReducer(state: SceneState, action: SceneAction): SceneState
         redoStack: []
       };
 
+    case 'ADD_KEYFRAME':
+      return {
+        ...state,
+        timeline: {
+          ...state.timeline,
+          keyframes: [...state.timeline.keyframes, action.payload].sort((a, b) => a.timestamp - b.timestamp),
+          duration: Math.max(state.timeline.duration, action.payload.timestamp)
+        },
+        undoStack: [...state.undoStack, snapshot],
+        redoStack: []
+      };
+
+    case 'UPDATE_KEYFRAME':
+      return {
+        ...state,
+        timeline: {
+          ...state.timeline,
+          keyframes: state.timeline.keyframes.map(kf =>
+            kf.id === action.payload.id
+              ? { ...kf, ...action.payload.updates }
+              : kf
+          )
+        },
+        undoStack: [...state.undoStack, snapshot],
+        redoStack: []
+      };
+
+    case 'DELETE_KEYFRAME':
+      const filteredKeyframes = state.timeline.keyframes.filter(kf => kf.id !== action.payload.id);
+      return {
+        ...state,
+        timeline: {
+          ...state.timeline,
+          keyframes: filteredKeyframes,
+          duration: filteredKeyframes.length > 0
+            ? filteredKeyframes[filteredKeyframes.length - 1].timestamp
+            : 0
+        },
+        undoStack: [...state.undoStack, snapshot],
+        redoStack: []
+      };
+
+    case 'UPDATE_OBJECT_AT_KEYFRAME':
+      return {
+        ...state,
+        timeline: {
+          ...state.timeline,
+          keyframes: state.timeline.keyframes.map(kf =>
+            kf.id === action.payload.keyframeId
+              ? {
+                  ...kf,
+                  objectStates: {
+                    ...kf.objectStates,
+                    [action.payload.objectId]: action.payload.state
+                  }
+                }
+              : kf
+          )
+        },
+        undoStack: [...state.undoStack, snapshot],
+        redoStack: []
+      };
+
+    case 'SET_TIME':
+      return {
+        ...state,
+        currentKeyframe: action.payload
+      };
+
+    case 'APPLY_INTERPOLATED_STATES':
+      // Apply interpolated states to objects
+      return {
+        ...state,
+        objects: state.objects.map(obj => {
+          const interpolatedState = action.payload[obj.id];
+          if (interpolatedState) {
+            return {
+              ...obj,
+              properties: {
+                ...obj.properties,
+                position: interpolatedState.position,
+                rotation: interpolatedState.rotation,
+                ...interpolatedState.properties
+              }
+            };
+          }
+          return obj;
+        })
+      };
+
     default:
       return state;
   }

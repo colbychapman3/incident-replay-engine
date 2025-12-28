@@ -6,8 +6,11 @@ import { SceneEditor } from '@/components/canvas/SceneEditor';
 import { AssetPalette } from '@/components/ui/AssetPalette';
 import { PropertyPanel } from '@/components/ui/PropertyPanel';
 import { EnvelopeToggles } from '@/components/ui/EnvelopeToggles';
+import { Timeline } from '@/components/timeline/Timeline';
+import { TimelineControls } from '@/components/timeline/TimelineControls';
+import { useTimelinePlayback } from '@/hooks/useTimelinePlayback';
 import { AssetDefinition } from '@/types/assets';
-import { SceneObject, EnvelopeType } from '@/types/scene';
+import { SceneObject, EnvelopeType, Keyframe, ObjectState } from '@/types/scene';
 
 function EditorContent() {
   const { state, dispatch } = useSceneContext();
@@ -111,6 +114,58 @@ function EditorContent() {
     dispatch({ type: 'TOGGLE_ENVELOPE', payload: type });
   };
 
+  // Timeline playback
+  const {
+    isPlaying,
+    currentTime,
+    playbackSpeed,
+    duration,
+    play,
+    pause,
+    stop,
+    seek,
+    stepForward,
+    stepBackward,
+    jumpToKeyframe,
+    setPlaybackSpeed
+  } = useTimelinePlayback({
+    keyframes: state.timeline.keyframes,
+    fps: state.timeline.fps,
+    onTimeUpdate: (time, interpolatedStates) => {
+      dispatch({ type: 'SET_TIME', payload: time });
+      dispatch({ type: 'APPLY_INTERPOLATED_STATES', payload: interpolatedStates });
+    }
+  });
+
+  // Handle add keyframe
+  const handleAddKeyframe = (timestamp: number) => {
+    const newKeyframe: Keyframe = {
+      id: `T${state.timeline.keyframes.length}`,
+      timestamp,
+      label: `T${state.timeline.keyframes.length}: New event`,
+      objectStates: {}
+    };
+
+    // Capture current object states at this keyframe
+    state.objects.forEach(obj => {
+      newKeyframe.objectStates[obj.id] = {
+        position: obj.properties.position || { x: 0, y: 0 },
+        rotation: obj.properties.rotation || 0,
+        properties: obj.properties,
+        visible: true
+      };
+    });
+
+    dispatch({ type: 'ADD_KEYFRAME', payload: newKeyframe });
+  };
+
+  // Handle delete keyframe
+  const handleDeleteKeyframe = (keyframeId: string) => {
+    if (state.timeline.keyframes.length > 1) {
+      dispatch({ type: 'DELETE_KEYFRAME', payload: { id: keyframeId } });
+    }
+  };
+
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-gray-900">
       {/* Left Sidebar: Asset Palette */}
@@ -161,24 +216,30 @@ function EditorContent() {
           <SceneEditor />
         </div>
 
-        {/* Bottom Status Bar */}
-        <div className="h-10 bg-gray-800 border-t border-gray-700 flex items-center justify-between px-4 text-xs text-gray-400">
-          <div className="flex items-center gap-4">
-            <span>Keyframe: T{state.currentKeyframe}</span>
-            <span>•</span>
-            <span>Changes: {state.changeHistory.length}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-xs">Ctrl+Z</kbd>
-            <span>Undo</span>
-            <span>•</span>
-            <kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-xs">Del</kbd>
-            <span>Delete</span>
-            <span>•</span>
-            <kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-xs">Esc</kbd>
-            <span>Deselect</span>
-          </div>
-        </div>
+        {/* Timeline Controls */}
+        <TimelineControls
+          isPlaying={isPlaying}
+          currentTime={currentTime}
+          duration={duration}
+          playbackSpeed={playbackSpeed}
+          onPlay={play}
+          onPause={pause}
+          onStop={stop}
+          onStepBackward={stepBackward}
+          onStepForward={stepForward}
+          onSpeedChange={setPlaybackSpeed}
+        />
+
+        {/* Timeline Scrubber */}
+        <Timeline
+          keyframes={state.timeline.keyframes}
+          currentTime={currentTime}
+          duration={duration}
+          onSeek={seek}
+          onAddKeyframe={handleAddKeyframe}
+          onDeleteKeyframe={handleDeleteKeyframe}
+          onJumpToKeyframe={jumpToKeyframe}
+        />
       </div>
 
       {/* Right Sidebar: Property Panel */}

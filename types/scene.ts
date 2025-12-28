@@ -39,6 +39,12 @@ export type SceneAction =
   | { type: 'CLEAR_SELECTION' }
   | { type: 'SET_KEYFRAME'; payload: number }
   | { type: 'TOGGLE_ENVELOPE'; payload: EnvelopeType }
+  | { type: 'ADD_KEYFRAME'; payload: Keyframe }
+  | { type: 'UPDATE_KEYFRAME'; payload: { id: string; updates: Partial<Keyframe> } }
+  | { type: 'DELETE_KEYFRAME'; payload: { id: string } }
+  | { type: 'UPDATE_OBJECT_AT_KEYFRAME'; payload: { keyframeId: string; objectId: string; state: ObjectState } }
+  | { type: 'SET_TIME'; payload: number }
+  | { type: 'APPLY_INTERPOLATED_STATES'; payload: Record<string, ObjectState> }
   | { type: 'UNDO' }
   | { type: 'REDO' };
 
