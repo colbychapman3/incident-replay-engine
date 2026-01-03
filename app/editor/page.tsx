@@ -1,19 +1,25 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { SceneProvider, useSceneContext } from '@/context/SceneContext';
 import { SceneEditor } from '@/components/canvas/SceneEditor';
 import { AssetPalette } from '@/components/ui/AssetPalette';
 import { PropertyPanel } from '@/components/ui/PropertyPanel';
 import { EnvelopeToggles } from '@/components/ui/EnvelopeToggles';
+import { ExportMenu } from '@/components/ui/ExportMenu';
 import { Timeline } from '@/components/timeline/Timeline';
 import { TimelineControls } from '@/components/timeline/TimelineControls';
+import { ProjectWizard } from '@/components/wizard/ProjectWizard';
+import { CommandChatbot } from '@/components/chatbot/CommandChatbot';
 import { useTimelinePlayback } from '@/hooks/useTimelinePlayback';
 import { AssetDefinition } from '@/types/assets';
 import { SceneObject, EnvelopeType, Keyframe, ObjectState } from '@/types/scene';
+import { Plus, MessageSquare } from 'lucide-react';
 
 function EditorContent() {
   const { state, dispatch } = useSceneContext();
+  const [showWizard, setShowWizard] = useState(false);
+  const [showChatbot, setShowChatbot] = useState(false);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -166,6 +172,40 @@ function EditorContent() {
     }
   };
 
+  // Handle wizard completion
+  const handleWizardComplete = async (wizardData: any) => {
+    // TODO: Send wizard data to API to create project
+    console.log('Project wizard completed:', wizardData);
+    // For now, just close the wizard
+    setShowWizard(false);
+    // In production, this would create a project in the database
+  };
+
+  // Handle chatbot commands
+  const handleChatbotCommand = async (command: string): Promise<{ success: boolean; message: string }> => {
+    // Parse and execute command
+    console.log('Executing command:', command);
+    // TODO: Integrate with command parser from lib/commands/parser.ts
+    return {
+      success: true,
+      message: `Command received: ${command}`
+    };
+  };
+
+  // Handle PNG export
+  const handleExportPNG = () => {
+    // TODO: Get canvas reference and export
+    console.log('Exporting PNG...');
+    // Would call canvas.toDataURL() and trigger download
+  };
+
+  // Handle PDF export
+  const handleExportPDF = async () => {
+    // TODO: Call PDF export API
+    console.log('Exporting PDF...');
+    // Would call /api/export/pdf with project data
+  };
+
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-gray-900">
       {/* Left Sidebar: Asset Palette */}
@@ -185,6 +225,16 @@ function EditorContent() {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* New Project button */}
+            <button
+              onClick={() => setShowWizard(true)}
+              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors flex items-center gap-2"
+              title="New Project"
+            >
+              <Plus className="w-4 h-4" />
+              New Project
+            </button>
+
             {/* Undo/Redo buttons */}
             <button
               onClick={() => dispatch({ type: 'UNDO' })}
@@ -202,6 +252,25 @@ function EditorContent() {
             >
               ↷ Redo
             </button>
+
+            {/* Chatbot toggle */}
+            <button
+              onClick={() => setShowChatbot(!showChatbot)}
+              className={`px-3 py-1.5 text-white text-sm rounded transition-colors flex items-center gap-2 ${
+                showChatbot ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-700 hover:bg-gray-600'
+              }`}
+              title="Command Chatbot"
+            >
+              <MessageSquare className="w-4 h-4" />
+              Chatbot
+            </button>
+
+            {/* Export menu */}
+            <ExportMenu
+              projectName="Current Project"
+              onExportPNG={handleExportPNG}
+              onExportPDF={handleExportPDF}
+            />
           </div>
         </div>
 
@@ -248,6 +317,24 @@ function EditorContent() {
         onPropertyChange={handlePropertyChange}
         onDelete={handleDelete}
       />
+
+      {/* Project Wizard Modal */}
+      {showWizard && (
+        <ProjectWizard
+          onComplete={handleWizardComplete}
+          onCancel={() => setShowWizard(false)}
+        />
+      )}
+
+      {/* Command Chatbot Panel */}
+      {showChatbot && (
+        <div className="fixed right-0 top-0 h-full w-96 bg-gray-800 border-l border-gray-700 shadow-2xl z-30">
+          <CommandChatbot
+            onCommand={handleChatbotCommand}
+            initialMode="command"
+          />
+        </div>
+      )}
     </div>
   );
 }

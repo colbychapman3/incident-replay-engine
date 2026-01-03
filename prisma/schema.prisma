@@ -26,7 +26,8 @@ model Project {
   name            String
   description     String?
   incidentDate    DateTime @db.Date
-  incidentTime    DateTime @db.Time
+  incidentTime    DateTime? @db.Time
+  location        String?
   sceneType       String   // 'vessel-deck' | 'port-road'
   dimensions      Json     // { width: number, height: number } in meters
   backgroundImage String?
